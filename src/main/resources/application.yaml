@@ -21,6 +21,8 @@ spring:
     defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
+      naming:
+        physical-strategy: com.challenge.shared.infrastructure.persistence.jpa.configuration.strategy.SnakeCaseWithPluralizedTablePhysicalNamingStrategy
     show-sql: true
     properties:
       hibernate:
