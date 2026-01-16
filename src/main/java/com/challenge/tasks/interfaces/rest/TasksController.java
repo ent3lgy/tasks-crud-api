@@ -198,13 +198,17 @@ public class TasksController {
    * @return The task statistics
    */
   @Operation(summary = "Get task statistics", description = "Retrieves aggregated task statistics using Java Streams")
-  @ApiResponse(responseCode = "200", description = "Task statistics",
-      content = @Content(schema = @Schema(implementation = TaskStatsResource.class)))
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Task statistics",
+          content = @Content(schema = @Schema(implementation = TaskStatsResource.class))),
+      @ApiResponse(responseCode = "204", description = "No statistics available")
+  })
   @GetMapping("/stats")
   public ResponseEntity<TaskStatsResource> getTaskStats() {
     var query = new GetTaskStatsQuery();
-    var stats = queryService.handle(query);
-    var statsResource = TaskStatsResourceFromStatsAssembler.toResourceFromStats(stats);
-    return ResponseEntity.ok(statsResource);
+    return queryService.handle(query)
+        .map(TaskStatsResourceFromStatsAssembler::toResourceFromStats)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.noContent().build());
   }
 }

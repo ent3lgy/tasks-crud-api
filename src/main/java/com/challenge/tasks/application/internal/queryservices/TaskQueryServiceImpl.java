@@ -3,19 +3,19 @@ package com.challenge.tasks.application.internal.queryservices;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.challenge.tasks.domain.services.TaskQueryService;
 import com.challenge.tasks.domain.model.aggregates.Task;
+import com.challenge.tasks.domain.services.TaskQueryService;
+import com.challenge.tasks.domain.model.valueobjects.TaskStatus;
 import com.challenge.tasks.domain.model.queries.GetAllTasksQuery;
 import com.challenge.tasks.domain.model.queries.GetTaskByIdQuery;
 import com.challenge.tasks.domain.model.queries.GetTaskStatsQuery;
-import com.challenge.tasks.domain.model.valueobjects.TaskStatus;
+import com.challenge.tasks.domain.model.valueobjects.TaskStatistics;
 import com.challenge.tasks.infrastructure.persistence.jpa.repositories.TaskRepository;
 
-import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 /**
@@ -42,35 +42,27 @@ public class TaskQueryServiceImpl implements TaskQueryService {
     var status = query.status();
     var priority = query.priority();
 
-    // Verify by status, priority and search term
     if (status != null && priority != null && search != null && !search.trim().isEmpty()) {
       return taskRepository.findByStatusAndPriorityAndSearchTerm(status, priority, search.trim());
     } 
-    // Verify by status and search term
     else if (status != null && search != null && !search.trim().isEmpty()) {
       return taskRepository.findByStatusAndSearchTerm(status, search.trim());
     } 
-    // Verify by priority and search term
     else if (priority != null && search != null && !search.trim().isEmpty()) {
       return taskRepository.findByPriorityAndSearchTerm(priority, search.trim());
     } 
-    // Verify by status and priority
     else if (status != null && priority != null) {
       return taskRepository.findByStatusAndPriority(status, priority);
     } 
-    // Verify by status
     else if (status != null) {
       return taskRepository.findByStatus(status);
     } 
-    // Verify by priority
     else if (priority != null) {
       return taskRepository.findByPriority(priority);
-    } 
-    // Verify by search term
+    }     
     else if (search != null && !search.trim().isEmpty()) {
       return taskRepository.findBySearchTerm(search.trim());
     } 
-    // Return all tasks
     else {
       return taskRepository.findAll();
     }
@@ -84,20 +76,20 @@ public class TaskQueryServiceImpl implements TaskQueryService {
 
   // {@inheritDoc}
   @Override
-  public Map<String, Object> handle(GetTaskStatsQuery query) {
+  public Optional<TaskStatistics> handle(GetTaskStatsQuery query) {
     var allTasks = taskRepository.findAll();
 
     var total = allTasks.stream().count();
     
     var byStatus = allTasks.stream()
         .collect(Collectors.groupingBy(
-            task -> task.getStatus().name(), 
+            Task::getStatus, 
             Collectors.counting()
         ));
     
     var byPriority = allTasks.stream()
         .collect(Collectors.groupingBy(
-            task -> task.getPriority().name(), 
+            Task::getPriority, 
             Collectors.counting()
         ));
     
@@ -117,12 +109,7 @@ public class TaskQueryServiceImpl implements TaskQueryService {
         .limit(5)
         .collect(Collectors.toList());
 
-    return Map.of(
-        "total", total,
-        "byStatus", byStatus,
-        "byPriority", byPriority,
-        "overdue", overdue,
-        "next7Days", next7Days
-    );
+    var statistics = new TaskStatistics(total, byStatus, byPriority, overdue, next7Days);
+    return Optional.of(statistics);
   }
 }

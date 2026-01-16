@@ -2,12 +2,12 @@ package com.challenge.tasks.domain.services;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Map;
 
 import com.challenge.tasks.domain.model.aggregates.Task;
 import com.challenge.tasks.domain.model.queries.GetAllTasksQuery;
 import com.challenge.tasks.domain.model.queries.GetTaskByIdQuery;
 import com.challenge.tasks.domain.model.queries.GetTaskStatsQuery;
+import com.challenge.tasks.domain.model.valueobjects.TaskStatistics;
 
 /**
  * Service to query tasks
@@ -36,7 +36,7 @@ public interface TaskQueryService {
   /**
    * Get task statistics
    * @param query The query to get task statistics
-   * @return Map with statistics
+   * @return Optional containing TaskStatistics value object with statistics
    */
-  Map<String, Object> handle(GetTaskStatsQuery query);
+  Optional<TaskStatistics> handle(GetTaskStatsQuery query);
 }
