@@ -21,7 +21,21 @@ spring:
     defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
+      naming:
+        physical-strategy: com.challenge.shared.infrastructure.persistence.jpa.configuration.strategy.SnakeCaseWithPluralizedTablePhysicalNamingStrategy
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
+documentation:
+  application:
+    description: Tasks Crud application documentation
+    version: v1.0.0
