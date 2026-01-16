@@ -1,0 +1,8 @@
+.git
+.mvn
+mvnw
+mvnw.cmd
+*.db
+.idea
+.vscode
+HELP.md
