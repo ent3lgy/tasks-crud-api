@@ -25,3 +25,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+documentation:
+  application:
+    description: Tasks Crud application documentation
+    version: v1.0.0
