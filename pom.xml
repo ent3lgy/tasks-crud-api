@@ -65,6 +65,13 @@
       <artifactId>lombok</artifactId>
       <optional>true</optional>
     </dependency>
+
+		<!-- https://mvnrepository.com/artifact/io.github.encryptorcode/pluralize -->
+    <dependency>
+      <groupId>io.github.encryptorcode</groupId>
+      <artifactId>pluralize</artifactId>
+      <version>1.0.0</version>
+    </dependency>
 	</dependencies>
 
 	<build>
